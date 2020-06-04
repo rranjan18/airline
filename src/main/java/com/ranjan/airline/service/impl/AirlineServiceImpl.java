@@ -11,15 +11,18 @@ import org.springframework.stereotype.Service;
 
 import com.ranjan.airline.config.AirlineRuntimeException;
 import com.ranjan.airline.config.JwtTokenUtil;
+import com.ranjan.airline.entity.AirlineSearchEntity;
+import com.ranjan.airline.exception.FlightsNotFoundException;
 import com.ranjan.airline.model.PassangerBean;
 import com.ranjan.airline.model.SearchBean;
+import com.ranjan.airline.repository.AirlineSearchRepository;
 import com.ranjan.airline.service.AirlineService;
 
 @Service
 public class AirlineServiceImpl implements AirlineService {
 
-	// @Autowired
-	// private AirlineRepository airlineRepository;
+	@Autowired
+	private AirlineSearchRepository airlineRepository;
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
@@ -29,11 +32,46 @@ public class AirlineServiceImpl implements AirlineService {
 
 		jwtTokenUtil.validateToken(httpHeaders);
 
+		// List<AirlineSearchEntity> findSearchEntity =
+		// airlineRepository.findSearchEntity(departForm, departForm);
+
+		// List<SearchBean> searchList = getSearchList(findSearchEntity);
+
 		List<SearchBean> searchList = getDummyResponse();
+
+		if (searchList == null) {
+			throw new FlightsNotFoundException("Flight not found");
+		}
 		return searchList;
 	}
 
-	public PassangerBean savePassanger(PassangerBean passengers, HttpHeaders httpHeaders) throws AirlineRuntimeException {
+	private List<SearchBean> getSearchList(List<AirlineSearchEntity> findSearchEntity) {
+
+		List<SearchBean> searchList = null;
+		if (findSearchEntity.size() > 0) {
+
+			searchList = new ArrayList<>();
+
+			for (AirlineSearchEntity airlineSearchEntity : findSearchEntity) {
+
+				SearchBean searchBean = new SearchBean();
+				searchBean.setAmount(airlineSearchEntity.getAmount());
+				searchBean.setArrive(airlineSearchEntity.getArrive());
+				searchBean.setDepart(airlineSearchEntity.getDepart());
+				searchBean.setDuration(airlineSearchEntity.getDepartForm());
+				searchBean.setId(airlineSearchEntity.getId());
+				searchBean.setSortBy(airlineSearchEntity.getSortBy());
+
+				searchList.add(searchBean);
+
+			}
+
+		}
+		return searchList;
+	}
+
+	public PassangerBean savePassanger(PassangerBean passengers, HttpHeaders httpHeaders)
+			throws AirlineRuntimeException {
 		jwtTokenUtil.validateToken(httpHeaders);
 
 		passengers.setId(UUID.randomUUID().toString());

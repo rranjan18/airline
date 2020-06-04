@@ -1,12 +1,9 @@
 package com.ranjan.airline;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
+//@SpringBootTest
 class AirlineApplicationTests {
 
-	@Test
+	// @Test
 	void contextLoads() {
 	}
 
